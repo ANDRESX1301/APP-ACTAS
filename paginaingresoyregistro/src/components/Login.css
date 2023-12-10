@@ -1,0 +1,26 @@
+.input-field {
+    border: 1px solid white; /* Establece el borde blanco inicial*/
+    transition: border-color 0.3s; /* Agrega una transición para suavizar el cambio*/
+    font-weight: normal; /* Establece el peso de la fuente inicial*/
+  }
+  
+  .input-field:hover {
+    border-color: blue; /*Cambia el color del borde al pasar el mouse sobre el campo de entrada*/
+  }
+  
+  .input-field:focus {
+    border-color: blue;/* Cambia el color del borde al seleccionar el campo de entrada*/
+    font-weight: bold; /* Hace que los bordes se vuelvan negrita al seleccionar el campo de entrada*/
+  }
+  
+  .login-button {
+    background-color: white; /* Establece el fondo blanco inicial*/
+    color: black; /* Establece el color del texto inicial*/
+    transition: background-color 0.3s, color 0.3s; /*Agrega una transición para suavizar el cambio*/
+  }
+  
+  .login-button:hover {
+    background-color: blue; /* Cambia el color de fondo al pasar el mouse sobre el botón*/
+    color: white; /* Cambia el color del texto al pasar el mouse sobre el botón*/
+  }
+  
