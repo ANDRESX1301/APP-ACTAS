@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 
 const Signup = () => {
   const [nombre, setnombre] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [apellido, setapellido] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSignup = () => {
     // Lógica para manejar el registro de usuario
-    console.log(`Registrarse con Nombre: ${nombre}, Apellido: ${lastName}, Email: ${email} y Contraseña: ${password}`);
+    console.log(`Registrarse con Nombre: ${nombre}, Apellido: ${apellido}, Email: ${email} y Contraseña: ${password}`);
   };
 
   return (
@@ -17,13 +17,13 @@ const Signup = () => {
       <h2>Registrarse</h2>
       <form>
         <label>
-          Nombre analisado:
+          Nombre:
           <input type="text" value={nombre} onChange={(e) => setnombre(e.target.value)} />
         </label>
         <br />
         <label>
           Apellido:
-          <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+          <input type="text" value={apellido} onChange={(e) => setapellido(e.target.value)} />
         </label>
         <br />
         <label>
