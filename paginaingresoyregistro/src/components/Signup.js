@@ -17,7 +17,7 @@ const Signup = () => {
       <h2>Registrarse</h2>
       <form>
         <label>
-          NombreA:
+          Nombre:
           <input type="text" value={nombre} onChange={(e) => setnombre(e.target.value)} />
         </label>
         <br />
