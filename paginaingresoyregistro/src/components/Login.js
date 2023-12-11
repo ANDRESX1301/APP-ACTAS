@@ -5,11 +5,30 @@ import './Login.css'; // Importa tu archivo SaaS
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
+/*
   const handleLogin = () => {
     // Lógica para manejar la autenticación
     console.log(`Iniciar sesión con email: ${email} y contraseña: ${password}`);
   };
+*/
+
+const handleLogin = async () => {
+  try {
+      const response = await fetch('http://localhost:5000/login', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email,password }),
+      });
+
+      const data = await response.json();
+      console.log(data); // Puedes manejar la respuesta del backend aquí
+  } catch (error) {
+      console.error('Error al realizar la solicitud:', error);
+  }
+};
+
 
   return (
     <div className='container'>

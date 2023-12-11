@@ -8,10 +8,29 @@ const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSignup = () => {
+/*  const handleSignup = () => {
     // Lógica para manejar el registro de usuario
     console.log(`Registrarse con Nombre: ${nombre}, Apellido: ${apellido}, Email: ${email} y Contraseña: ${password}`);
-  };
+  };*/
+
+  // Ejemplo en tu componente de Signup.js
+    const handleSignup = async () => {
+      try {
+          const response = await fetch('http://localhost:5000/signup', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ nombre, apellido, email,password }),
+          });
+
+          const data = await response.json();
+          console.log(data); // Puedes manejar la respuesta del backend aquí
+      } catch (error) {
+          console.error('Error al realizar la solicitud:', error);
+      }
+    };
+
 
   return (
     <div className='container'>
