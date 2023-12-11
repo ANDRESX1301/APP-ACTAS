@@ -1,0 +1,51 @@
+body {
+  margin: 0;
+  padding: 0;
+  /*font-family: 'Arial', sans-serif;*/
+  background-image: url('../Imagenes/Log-Signup.jpg'); /* Reemplaza 'ruta-de-tu-imagen.jpg' con la ruta correcta de tu imagen */
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+}
+.container {
+  background-color: rgba(255, 255, 255, 0.8); /* Fondo semi-transparente para mejorar la legibilidad del contenido */
+  padding: 20px;
+  border-radius: 10px; /* Bordes circulares */
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Sombra para resaltar el cuadro */
+  margin-left: 200px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* Justificar a la derecha */
+}
+
+.input-field {
+    border: 1px solid grey; /* Establece el borde blanco inicial*/
+    transition: border-color 0.3s; /* Agrega una transición para suavizar el cambio*/
+    font-weight: normal; /* Establece el peso de la fuente inicial*/
+    justify-content: right;
+    margin-left: 5px;  
+  }
+  
+  .input-field:hover {
+    border-color: rgb(37, 33, 169); /*Cambia el color del borde al pasar el mouse sobre el campo de entrada*/
+  }
+  
+  .login-button {
+    background-color: white; /* Establece el fondo blanco inicial*/
+    color: black; /* Establece el color del texto inicial*/
+    transition: background-color 0.3s, color 0.3s; /*Agrega una transición para suavizar el cambio*/
+    border-radius: 5px;
+  }
+  
+  .login-button:hover {
+    background-color: rgb(36, 36, 186); /* Cambia el color de fondo al pasar el mouse sobre el botón*/
+    color: white; /* Cambia el color del texto al pasar el mouse sobre el botón*/
+  }
+  

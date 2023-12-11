@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import './Login.css'; // Importa tu archivo SaaS
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -11,20 +12,30 @@ const Login = () => {
   };
 
   return (
-    <div>
+    <div className='container'>
       <h2>Iniciar Sesión</h2>
       <form>
         <label>
           Correo Electrónico:
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="input-field" // Agrega una clase para los estilos
+          />
         </label>
         <br />
         <label>
           Contraseña:
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="input-field" // Agrega una clase para los estilos
+          />
         </label>
         <br />
-        <button type="button" onClick={handleLogin}>
+        <button type="button" onClick={handleLogin} className="login-button">
           Iniciar Sesión
         </button>
       </form>

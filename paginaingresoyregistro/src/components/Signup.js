@@ -1,42 +1,43 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import './Login.css';
 
 const Signup = () => {
   const [nombre, setnombre] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [apellido, setapellido] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSignup = () => {
     // Lógica para manejar el registro de usuario
-    console.log(`Registrarse con Nombre: ${nombre}, Apellido: ${lastName}, Email: ${email} y Contraseña: ${password}`);
+    console.log(`Registrarse con Nombre: ${nombre}, Apellido: ${apellido}, Email: ${email} y Contraseña: ${password}`);
   };
 
   return (
-    <div>
+    <div className='container'>
       <h2>Registrarse</h2>
       <form>
         <label>
           Nombre:
-          <input type="text" value={nombre} onChange={(e) => setnombre(e.target.value)} />
+          <input type="text" value={nombre} onChange={(e) => setnombre(e.target.value)} className='imput-field' />
         </label>
         <br />
         <label>
           Apellido:
-          <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+          <input type="text" value={apellido} onChange={(e) => setapellido(e.target.value)} className='imput-field' />
         </label>
         <br />
         <label>
           Correo Electrónico:
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className='imput-field' />
         </label>
         <br />
         <label>
           Contraseña:
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className='imput-field' />
         </label>
         <br />
-        <button type="button" onClick={handleSignup}>
+        <button type="button" onClick={handleSignup} className='login-button'>
           Registrarse
         </button>
       </form>
