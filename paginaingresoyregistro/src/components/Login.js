@@ -12,7 +12,7 @@ const Login = () => {
   };
 
   return (
-    <div>
+    <div className='container'>
       <h2>Iniciar Sesión</h2>
       <form>
         <label>

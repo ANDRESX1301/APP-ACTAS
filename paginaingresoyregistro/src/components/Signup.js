@@ -14,7 +14,7 @@ const Signup = () => {
   };
 
   return (
-    <div>
+    <div className='container'>
       <h2>Registrarse</h2>
       <form>
         <label>
