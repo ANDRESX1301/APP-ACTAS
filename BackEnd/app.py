@@ -26,6 +26,7 @@ class Registro:
         self.nombre = nombre
         self.apellido = apellido
         #almacenamos la pass con hash
+        #dasdasdasd
         self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     #definicion para uso de base de datos
     def guardar_en_db(self):        
