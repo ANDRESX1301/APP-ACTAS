@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Login.css'; // Importa tu archivo SaaS
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  // Usa 'useNavigate' para obtener el objeto 'history'
+  const navigate = useNavigate();
 /*
   const handleLogin = () => {
     // Lógica para manejar la autenticación
@@ -22,8 +24,15 @@ const handleLogin = async () => {
           body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
-      console.log(data); // Puedes manejar la respuesta del backend aquí
+        // Si es JSON, analizar la respuesta como JSON
+        const data = await response.json();
+
+        if (data.success) {
+          // Redirigir al usuario a la página deseada después del inicio de sesión exitoso
+          navigate('/home', { state: { userData: data.data } });
+        } else {
+          console.error('Credenciales incorrectas');
+        }
   } catch (error) {
       console.error('Error al realizar la solicitud:', error);
   }

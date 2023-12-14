@@ -1,9 +1,9 @@
 import os #se debe usar ya que vamos a usar creddenciales de entorno
-from flask import Flask, request, jsonify # hay que instalar pip flask
+from flask import Flask, request, jsonify, session  # hay que instalar pip flask
 from flask_cors import CORS # hay que instalar pip flaskcors
 from flask_mysqldb import MySQL #hay que instalarlo con pip flask-mysqldb
 import bcrypt # hay que instalar pip bcrypt esto es para hashear las pass y agreegarle sales
-
+import secrets # no hay que instalarlo pero si se hace necesario para las sessiones
 app = Flask(__name__)
 CORS(app)  # Habilita CORS para todas las rutas
 
@@ -49,6 +49,11 @@ class Registro:
             return {'success': False, 'message': f'Error al ejecutar la consulta SQL: {e}'}
         finally:
             cur.close()
+
+#creacion de clavs secretas para sessiones unicas
+app.secret_key = secrets.token_hex(16)
+
+ ############################# RUTAS ##########################################          
 # Función para crear un nuevo registro y agregarlo a la lista
 @app.route('/signup', methods=['POST'])
 def signup():
@@ -79,6 +84,7 @@ def login():
         #se accede a registro que es la respuesta de SQL mediante la poscicion [] vectorial
         #y se usa encode en ambos ya que al provenir de cadenas varchar se deben autenticar en bytes
         if registro and bcrypt.checkpw(password.encode('utf-8'), registro[4].encode('utf-8')):
+            # Redirigir al usuario a la página deseada después del inicio de sesión exitoso
             return jsonify({
                 'success': True,
                 'message': 'Inicio de sesión exitoso',
@@ -92,5 +98,14 @@ def login():
     finally:
         cur.close()
 
+# Ruta para cerrar sesión
+@app.route('/logout', methods=['POST'])
+def logout():
+    # Aquí podrías limpiar cualquier información de sesión o realizar otras acciones necesarias
+    # Por ejemplo, podrías limpiar la información almacenada en la sesión.
+    session.clear()
+
+    return jsonify({'success': True, 'message': 'Sesión cerrada correctamente'})
+############################# RUTAS ########################################## 
 if __name__ == '__main__':
     app.run(debug=True)
