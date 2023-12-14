@@ -1,65 +1,96 @@
-# app.py
-
+import os #se debe usar ya que vamos a usar creddenciales de entorno
 from flask import Flask, request, jsonify # hay que instalar pip flask
 from flask_cors import CORS # hay que instalar pip flaskcors
+from flask_mysqldb import MySQL #hay que instalarlo con pip flask-mysqldb
 import bcrypt # hay que instalar pip bcrypt esto es para hashear las pass y agreegarle sales
 
 app = Flask(__name__)
 CORS(app)  # Habilita CORS para todas las rutas
 
+# Configuración de la conexión a la base de datos MariaDB usando eviromental
+app.config['MYSQL_HOST'] = os.environ.get('MYSQL_HOST','localhost')
+app.config['MYSQL_PORT'] = int(os.environ.get('MYSQL_PORT', 3306))  # El valor predeterminado es 3306
+app.config['MYSQL_USER'] = os.environ.get('MYSQL_USER', 'tu_usuario')
+app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD', 'tu_contraseña')
+app.config['MYSQL_DB'] = os.environ.get('MYSQL_DB', 'tu_base_de_datos')
+
+mysql = MySQL(app)
 # Lista para almacenar instancias de la clase Registro
-registros = []
+#registros = []
 
 # Definición de la clase Registro
 class Registro:
-    def __init__(self, numero, email, nombre, apellido, password):
-        self.numero = numero
+    def __init__(self, email, nombre, apellido, password):
+        #self.numero = numero
         self.email = email
         self.nombre = nombre
         self.apellido = apellido
         #almacenamos la pass con hash
         self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    #definicion para uso de base de datos
+    def guardar_en_db(self):        
+        cur = mysql.connection.cursor()
+        try:
+            # Verifica si ya existe un registro con el mismo correo electrónico
+            cur.execute("SELECT * FROM USUARIOS WHERE email = %s", (self.email,))
+            existing_record = cur.fetchone()
 
+            if existing_record:
+                return {'success': False, 'message': 'Ya existe un usuario con ese correo electronico'}
+            # Si no existe, procede a crear un nuevo registro
+            cur.execute(
+                "INSERT INTO USUARIOS (email, nombre, apellido, password) VALUES (%s, %s, %s, %s)",
+                (self.email, self.nombre, self.apellido, self.password.decode('utf-8'))
+            )
+            mysql.connection.commit()
+            return {'success': True, 'message': f'Registro con email {self.email} creado con éxito'}
+        except Exception as e:
+            print(f'Error al ejecutar la consulta SQL: {e}')
+            return {'success': False, 'message': f'Error al ejecutar la consulta SQL: {e}'}
+        finally:
+            cur.close()
 # Función para crear un nuevo registro y agregarlo a la lista
 @app.route('/signup', methods=['POST'])
 def signup():
     data = request.get_json()
     email = data.get('email')
-    # Verifica si ya existe un registro con el mismo correo electrónico
-    if any(registro.email == email for registro in registros):
-        return jsonify({'success': False, 'message': 'Ya existe un usuario con este correo electrónico'})
-    # Si no existe, procede a crear un nuevo registro
-    numero = 1 if not registros else registros[-1].numero + 1
     nombre = data.get('nombre')
     apellido = data.get('apellido')
     password = data.get('password')
 
-    # Crea una instancia de la clase Registro con la información proporcionada
-    registro = Registro(numero, email, nombre, apellido, password)
-    # Agrega el registro a la lista de registros
-    registros.append(registro)
+    nuevo_registro = Registro(email, nombre, apellido, password)
+    resultado = nuevo_registro.guardar_en_db()
 
-    return jsonify({'success': True, 'message': 'Registro #:'+str(numero)+' '+email+' creado con éxito '})
+    return jsonify(resultado)
+
 
 # Función para autenticar un usuario
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     email = data.get('email')
-    password = data.get('password')# Agrega la obtención de la password desde la solicitud
+    password = data.get('password')
 
-    # Busca el registro en la lista de registros
-    registro = next((r for r in registros if r.email == email), None)
-
-    # Muestra la información si el registro se encuentra, de lo contrario, imprime un mensaje
-    if registro and bcrypt.checkpw(password.encode('utf-8'), registro.password):
-        return jsonify({
-            'success': True,
-            'message': 'Inicio de sesión exitoso',
-            'data': {'pass':registro.password, 'numero': registro.numero, 'nombre': registro.nombre, 'apellido': registro.apellido}
-        })
-    else:
-        return jsonify({'success': False, 'message': 'Credenciales incorrectas'})
+    try:
+        cur = mysql.connection.cursor()
+        # Consultar la base de datos para obtener el registro del usuario
+        cur.execute("SELECT * FROM USUARIOS WHERE email=%s", (email,))
+        registro = cur.fetchone()
+        #se accede a registro que es la respuesta de SQL mediante la poscicion [] vectorial
+        #y se usa encode en ambos ya que al provenir de cadenas varchar se deben autenticar en bytes
+        if registro and bcrypt.checkpw(password.encode('utf-8'), registro[4].encode('utf-8')):
+            return jsonify({
+                'success': True,
+                'message': 'Inicio de sesión exitoso',
+                'data': {'email': registro[1], 'nombre': registro[2], 'apellido': registro[3]}
+            })
+        else:
+            return jsonify({'success': False, 'message': 'Credenciales incorrectas'})
+    except Exception as e:
+        print(f"Error al autenticar al usuario: {e}")
+        return jsonify({'success': False, 'message': 'Error al autenticar al usuario'})
+    finally:
+        cur.close()
 
 if __name__ == '__main__':
     app.run(debug=True)
