@@ -7,6 +7,8 @@ const Signup = () => {
   const [apellido, setapellido] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorEmail, setErrorEmail] = useState('');
+  const [errorPassword, setErrorPassword] = useState('');
 
 /*  const handleSignup = () => {
     // Lógica para manejar el registro de usuario
@@ -15,6 +17,26 @@ const Signup = () => {
 
   // Ejemplo en tu componente de Signup.js
     const handleSignup = async () => {
+      // Validar el formato del correo electrónico
+      const formatoValido = /^[\w.-]+@[a-zA-Z]+\.[a-zA-Z]{2,}$/.test(email);
+
+      if (!formatoValido) {
+        setErrorEmail('El formato del correo electrónico no es válido el formato debe ser abc@def.com');
+        return;
+      } else {
+        setErrorEmail('');
+      }
+
+      // Validar la contraseña
+      const formatoContraseñaValido = /^(?=.*[A-Z])(?=.*\d).{8,}$/.test(password);
+
+      if (!formatoContraseñaValido) {
+        setErrorPassword('La contraseña debe contener al menos una mayúscula, un número y ser de al menos 8 caracteres');
+        return;
+      } else {
+        setErrorPassword('');
+      }
+      // Si llegamos aquí, el formato del correo electrónico y la contraseña son válidos
       try {
           const response = await fetch('http://localhost:5000/signup', {
               method: 'POST',
@@ -31,11 +53,16 @@ const Signup = () => {
       }
     };
 
+    const handleSubmit = (event) => {
+      event.preventDefault();
+      handleSignup();
+    };
+  
 
   return (
     <div className='container'>
       <h2>Registrarse</h2>
-      <form>
+      <form onSubmit={handleSubmit}> 
         <label>
           Nombre:
           <input type="text" value={nombre} onChange={(e) => setnombre(e.target.value)} className='imput-field' />
@@ -49,14 +76,16 @@ const Signup = () => {
         <label>
           Correo Electrónico:
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className='imput-field' />
+          {errorEmail && <p style={{ color: 'red' }}>{errorEmail}</p>}
         </label>
         <br />
         <label>
           Contraseña:
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className='imput-field' />
+          {errorPassword && <p style={{ color: 'red' }}>{errorPassword}</p>}        
         </label>
         <br />
-        <button type="button" onClick={handleSignup} className='login-button'>
+        <button type="submit"  className='login-button'>
           Registrarse
         </button>
       </form>
