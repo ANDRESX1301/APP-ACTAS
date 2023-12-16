@@ -1,18 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import './Login.css'; // Importa tu archivo SaaS
+import './Login.css' ; // Importa tu archivo SaaS
+import './botones.css'; // Importa tu archivo SaaS
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   // Usa 'useNavigate' para obtener el objeto 'history'
   const navigate = useNavigate();
-/*
-  const handleLogin = () => {
-    // Lógica para manejar la autenticación
-    console.log(`Iniciar sesión con email: ${email} y contraseña: ${password}`);
-  };
-*/
+
 
 const handleLogin = async () => {
   try {

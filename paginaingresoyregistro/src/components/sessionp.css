@@ -1,0 +1,25 @@
+/* Estilos para el sidebar y botones */
+.sidebar {
+  float: left;
+  width: 40%;
+  height: 100vh;
+  padding: 20px;
+  background-color: #f1f1f1;
+}
+
+.flag-button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  margin-bottom: 10px;
+  cursor: pointer;
+  background: linear-gradient(to right, #dcdcdc 50%, #09d2e08a 50%); /* Gradiente lineal para el efecto */
+  background-size: 200% 100%; /* Tamaño del gradiente */
+  transition: background-position 0.3s ease; /* Transición de posición durante 0.3 segundos */
+}
+
+.flag-button:hover {
+  background-position: -100% 0; /* Mueve el gradiente a la posición inicial al posarse sobre el botón */
+}
+
+/* Resto de tus estilos... */
