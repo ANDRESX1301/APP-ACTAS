@@ -36,16 +36,3 @@ form {
   .input-field:hover {
     border-color: rgb(37, 33, 169); /*Cambia el color del borde al pasar el mouse sobre el campo de entrada*/
   }
-  
-  .login-button {
-    background-color: white; /* Establece el fondo blanco inicial*/
-    color: black; /* Establece el color del texto inicial*/
-    transition: background-color 0.3s, color 0.3s; /*Agrega una transición para suavizar el cambio*/
-    border-radius: 5px;
-  }
-  
-  .login-button:hover {
-    background-color: rgb(36, 36, 186); /* Cambia el color de fondo al pasar el mouse sobre el botón*/
-    color: white; /* Cambia el color del texto al pasar el mouse sobre el botón*/
-  }
-  

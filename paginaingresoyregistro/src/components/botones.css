@@ -1,0 +1,23 @@
+.login-button {
+    background-color: whitesmoke; /* Establece el fondo blanco inicial*/
+    color: black; /* Establece el color del texto inicial*/
+    transition: background-color 0.3s, color 0.3s; /*Agrega una transición para suavizar el cambio*/
+    border-radius: 5px;
+  }
+  
+  .login-button:hover {
+    background-color: rgb(36, 36, 186); /* Cambia el color de fondo al pasar el mouse sobre el botón*/
+    color: white; /* Cambia el color del texto al pasar el mouse sobre el botón*/
+  }
+  
+  .logout-button {
+    background-color: whitesmoke; /* Establece el fondo blanco inicial*/
+    color: black; /* Establece el color del texto inicial*/
+    transition: background-color 0.3s, color 0.3s; /*Agrega una transición para suavizar el cambio*/
+    border-radius: 5px;
+  }
+  
+  .logout-button:hover {
+    background-color: red; /* Cambia el color de fondo al pasar el mouse sobre el botón*/
+    color: white; /* Cambia el color del texto al pasar el mouse sobre el botón*/
+  }
