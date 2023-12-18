@@ -19,7 +19,7 @@ def obtener_opciones():
         opciones = cur.fetchall()
         # Transformar los resultados en un formato adecuado para el JSON
         opciones_list = [{'email': opcion[1], 'apellido': opcion[3]} for opcion in opciones]
-        print(opciones_list) 
+        #print(opciones_list) 
         return jsonify({
             'success': True,
             'message': 'Opciones obtenidas', 
