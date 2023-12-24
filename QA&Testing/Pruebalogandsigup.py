@@ -23,7 +23,7 @@ def prueba_login_exitoso(driver):
     username_field = driver.find_element("xpath", "//input[@type='email']")
     password_field = driver.find_element("xpath", "//input[@type='password']")
     # Ingresar información en los campos
-    username_field.send_keys("rr@gmail.com")
+    username_field.send_keys("rra@gmail.com")
     password_field.send_keys("Prueba321")
     # Enviar el formulario
     password_field.send_keys(Keys.RETURN)
@@ -112,7 +112,7 @@ def prueba_usuario_yaexiste (driver):
     name_field.send_keys('Ya')
     apellido_field.send_keys('Existe')
     username_field.send_keys('random_email@random.com')
-    password_field.send_keys("Prueba321")
+    password_field.send_keys('Prueba321')
     # Enviar el formulario
     password_field.send_keys(Keys.RETURN)
     
@@ -132,7 +132,24 @@ def prueba_usuario_yaexiste (driver):
     except Exception as e:
         print_red(f"Fallo en la Prueba Prueba de Registro Repetido (excepcion): {e}")
 
+def prueba_login_owner(driver):
+    # Tu código de prueba para inicio de sesión exitoso
+    driver.get("http://localhost:3000/")
+    # Resto del código...
+    # Encontrar los campos de usuario y contraseña e ingresar información
+    username_field = driver.find_element("xpath", "//input[@type='email']")
+    password_field = driver.find_element("xpath", "//input[@type='password']")
+    # Ingresar información en los campos
+    username_field.send_keys("rr@gmail.com")
+    password_field.send_keys("Prueba321")
+    # Enviar el formulario
+    password_field.send_keys(Keys.RETURN)
 
+    try:
+        WebDriverWait(driver, 3).until(EC.url_contains("http://localhost:3000/altacliente"))
+        print_green("Prueba Login OWNER OK")
+    except Exception as e:
+        print_red(f"Fallo en la prueba Login OWNER (excepcion): {e}")
 
 if __name__ == '__main__':
     fake = Faker()
@@ -154,6 +171,7 @@ if __name__ == '__main__':
     prueba_usuario_errado(driver)
     prueba_nuevo_usuario(driver)
     prueba_usuario_yaexiste(driver)
+    prueba_login_owner(driver)
 
     # Cerrar el navegador al final de todas las pruebas
     driver.quit()

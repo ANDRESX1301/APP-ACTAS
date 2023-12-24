@@ -15,7 +15,7 @@ def obtener_opciones():
         # Realiza la lógica para obtener las opciones desde la base de datos
         cur = mysql.connection.cursor()
         # Consultar la base de datos para obtener las opciones del usuario
-        cur.execute("SELECT * FROM USUARIOS WHERE email = %s", ('rr@gmail.com',))
+        cur.execute("SELECT * FROM OPERADORES WHERE email = %s", ('rr@gmail.com',))
         opciones = cur.fetchall()
         # Transformar los resultados en un formato adecuado para el JSON
         opciones_list = [{'email': opcion[1], 'apellido': opcion[3]} for opcion in opciones]
