@@ -21,20 +21,22 @@ class Registro:
         self.apellido = apellido
         #almacenamos la pass con hash
         self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        # Extraemos el recurso o nombre de empresa del email
+        self.recurso = self.email.split('@')[1].split('.')[0]
     #definicion para uso de base de datos
     def guardar_en_db(self):        
         cur = mysql.connection.cursor()
         try:
             # Verifica si ya existe un registro con el mismo correo electrónico
-            cur.execute("SELECT * FROM USUARIOS WHERE email = %s", (self.email,))
+            cur.execute("SELECT * FROM OPERADORES WHERE email = %s", (self.email,))
             existing_record = cur.fetchone()
 
             if existing_record:
                 return {'success': False, 'message': 'Ya existe un usuario con ese correo electronico'}
             # Si no existe, procede a crear un nuevo registro
             cur.execute(
-                "INSERT INTO USUARIOS (email, nombre, apellido, password) VALUES (%s, %s, %s, %s)",
-                (self.email, self.nombre, self.apellido, self.password.decode('utf-8'))
+                "INSERT INTO OPERADORES (email, nombre, apellido, password, recurso) VALUES (%s, %s, %s, %s, %s)",
+                (self.email, self.nombre, self.apellido, self.password.decode('utf-8'), self.recurso)
             )
             mysql.connection.commit()
             return {'success': True, 'message': f'Registro con email {self.email} creado con éxito'}
@@ -44,7 +46,35 @@ class Registro:
         finally:
             cur.close()
 
-#creacion de clavs secretas para sessiones unicas
+class Cliente:
+    def __init__(self, nombrersocial, representante, recurso):
+        self.nombrersocial = nombrersocial
+        self.representante = representante
+        self.recurso = recurso
+     #definicion para uso de base de datos   
+    def guardar_en_db_cliente(self):        
+        cur = mysql.connection.cursor()
+        try:
+            # Verifica si ya existe un registro con el mismo correo electrónico
+            cur.execute("SELECT * FROM CLIENTES WHERE recurso = %s", (self.recurso,))
+            existing_record = cur.fetchone()
+
+            if existing_record:
+                return {'success': False, 'message': 'Ya existe un CLIENTE con ese recurso'}
+            # Si no existe, procede a crear un nuevo registro
+            cur.execute(
+                "INSERT INTO CLIENTES (nombrersocial, representante, recurso) VALUES (%s, %s, %s)",
+                (self.nombrersocial, self.representante, self.recurso)
+            )
+            mysql.connection.commit()
+            return {'success': True, 'message': f'Registro del cliente {self.nombrersocial} creado con éxito'}
+        except Exception as e:
+            print(f'Error al ejecutar la consulta SQL: {e}')
+            return {'success': False, 'message': f'Error al ejecutar la consulta SQL: {e}'}
+        finally:
+            cur.close()
+
+
 
  ############################# RUTAS ##########################################          
 # Función para crear un nuevo registro y agregarlo a la lista
@@ -61,6 +91,18 @@ def signup():
 
     return jsonify(resultado)
 
+# Función para crear un nuevo registro y agregarlo a la lista
+@acceso_bp.route('/altacliente', methods=['POST'])
+def altacliente():
+    data = request.get_json()
+    nombrersocial = data.get('nombrersocial')
+    representante = data.get('representante')
+    recurso = data.get('recurso')
+
+    nuevo_registro = Cliente(nombrersocial, representante, recurso)
+    resultado = nuevo_registro.guardar_en_db_cliente()
+
+    return jsonify(resultado)
 
 # Función para autenticar un usuario
 @acceso_bp.route('/login', methods=['POST'])
@@ -72,7 +114,7 @@ def login():
     try:
         cur = mysql.connection.cursor()
         # Consultar la base de datos para obtener el registro del usuario
-        cur.execute("SELECT * FROM USUARIOS WHERE email=%s", (email,))
+        cur.execute("SELECT * FROM OPERADORES WHERE email=%s", (email,))
         registro = cur.fetchone()
         #se accede a registro que es la respuesta de SQL mediante la poscicion [] vectorial
         #y se usa encode en ambos ya que al provenir de cadenas varchar se deben autenticar en bytes

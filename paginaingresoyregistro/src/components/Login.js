@@ -21,15 +21,22 @@ const Login = () => {
             body: JSON.stringify({ email, password }),
         });
 
-          // Si es JSON, analizar la respuesta como JSON
-          const data = await response.json();
+        // Si es JSON, analizar la respuesta como JSON
+        const data = await response.json();
 
-          if (data.success) {
-            // Redirigir al usuario a la página deseada después del inicio de sesión exitoso
-            navigate('/home', { state: { userData: data.data } });
+        if (data.success) {
+            // Redirigir al usuario a la página deseada (Owner) después del inicio de sesión exitoso
+            //se usa tolowercase() para evitar que mayusculas dañen la verificacion
+            if (data.data.email.toLowerCase() === 'rr@gmail.com') {
+              // Redirigir al usuario a la página de Altacliente
+              navigate('/altacliente', { state: { userData: data.data } });
           } else {
-            setErrorCredenciales('Credenciales incorrectas');
+              // Redirigir al usuario a la página de HOME
+              navigate('/home', { state: { userData: data.data } });
           }
+        } else {
+          setErrorCredenciales('Credenciales incorrectas');
+        }
     } catch (error) {
         console.error('Error al realizar la solicitud:', error);
     }

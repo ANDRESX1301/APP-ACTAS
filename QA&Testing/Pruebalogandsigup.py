@@ -112,7 +112,7 @@ def prueba_usuario_yaexiste (driver):
     name_field.send_keys('Ya')
     apellido_field.send_keys('Existe')
     username_field.send_keys('random_email@random.com')
-    password_field.send_keys("Prueba321")
+    password_field.send_keys('Prueba321')
     # Enviar el formulario
     password_field.send_keys(Keys.RETURN)
     
