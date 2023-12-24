@@ -144,7 +144,7 @@ if __name__ == '__main__':
     brave_options = webdriver.ChromeOptions()
     brave_options.binary_location = 'C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe'  # Ajusta la ruta según tu instalación
     # Configuración específica para Brave en modo headless
-    #brave_options.add_argument('--headless')  # Habilita el modo headless
+    brave_options.add_argument('--headless')  # Habilita el modo headless
 
     # Inicializa el controlador de Chrome con las opciones de Brave
     driver = webdriver.Chrome(options=brave_options)
