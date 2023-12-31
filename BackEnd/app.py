@@ -4,6 +4,7 @@ from flask_mysqldb import MySQL #hay que instalarlo con pip flask-mysqldb
 from acceso import acceso_bp #aqui se importan los archivos de el otro .py
 from DBresponse import DBresponse_bp #aqui se importan los archivos de el otro .py
 import secrets # no hay que instalarlo pero si se hace necesario para las sessiones
+
 app = Flask(__name__)
 # Configuración de la clave secreta para sesiones
 app.secret_key = secrets.token_hex(16)
@@ -17,6 +18,10 @@ app.config['MYSQL_PORT'] = int(os.environ.get('MYSQL_PORT', 3306))  # El valor p
 app.config['MYSQL_USER'] = os.environ.get('MYSQL_USER', 'tu_usuario')
 app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD', 'tu_contraseña')
 app.config['MYSQL_DB'] = os.environ.get('MYSQL_DB', 'tu_base_de_datos')
+app.config['AWS_ACCESS_KEY_ID'] = os.environ.get('identifications3', 'null')
+app.config['AWS_SECRET_ACCESS_KEY'] = os.environ.get('paswords3', 'null')
+app.config['AWS_BUCKET_NAME'] = 's3bucketavsfree'
+
 
 mysql = MySQL(app)
 

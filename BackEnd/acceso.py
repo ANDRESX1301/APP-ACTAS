@@ -1,8 +1,12 @@
-import os #se debe usar ya que vamos a usar creddenciales de entorno
-from flask import Flask, request, jsonify, session, Blueprint  # hay que instalar pip flask
+from flask import request, jsonify, session, Blueprint, current_app  # hay que instalar pip flask
 from flask_cors import CORS # hay que instalar pip flaskcors
 from flask_mysqldb import MySQL #hay que instalarlo con pip flask-mysqldb
 import bcrypt # hay que instalar pip bcrypt esto es para hashear las pass y agreegarle sales
+from werkzeug.utils import secure_filename #se utiliza para asegurar que un nombre de archivo sea seguro para su uso en el sistema de archivos como el logo
+import boto3 #se usa para subir y bajar archivos a un S3 buket y se instala desde pip
+from botocore.exceptions import NoCredentialsError # se usa junto a boto 3
+import tempfile # se debe usar para hacer carga de archivos temporales en el servidor de flask
+import os #se debe usar ya que vamos a usar creddenciales de entorno
 
 acceso_bp = Blueprint("acceso",__name__)
 CORS(acceso_bp)  # Habilita CORS para todas las rutas
@@ -47,26 +51,33 @@ class Registro:
             cur.close()
 
 class Cliente:
-    def __init__(self, nombrersocial, representante, recurso):
+    def __init__(self, nombrersocial, nfrontend, representante, recurso, nit, telefono, direccion, logo_path):
         self.nombrersocial = nombrersocial
+        self.nfrontend = nfrontend
         self.representante = representante
         self.recurso = recurso
-     #definicion para uso de base de datos   
+        self.nit = nit
+        self.telefono = telefono
+        self.direccion = direccion
+        self.logo_path = logo_path
+
     def guardar_en_db_cliente(self):        
         cur = mysql.connection.cursor()
         try:
-            # Verifica si ya existe un registro con el mismo correo electrónico
+            # Verificar si ya existe un registro con el mismo recurso
             cur.execute("SELECT * FROM CLIENTES WHERE recurso = %s", (self.recurso,))
             existing_record = cur.fetchone()
 
             if existing_record:
                 return {'success': False, 'message': 'Ya existe un CLIENTE con ese recurso'}
-            # Si no existe, procede a crear un nuevo registro
+            
+            # Insertar un nuevo registro en la base de datos
             cur.execute(
-                "INSERT INTO CLIENTES (nombrersocial, representante, recurso) VALUES (%s, %s, %s)",
-                (self.nombrersocial, self.representante, self.recurso)
+                "INSERT INTO CLIENTES (nombrersocial, nfrontend, representante, recurso, nit, telefono, direccion, logo_path) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                (self.nombrersocial, self.nfrontend, self.representante, self.recurso, self.nit, self.telefono, self.direccion, self.logo_path)
             )
             mysql.connection.commit()
+            
             return {'success': True, 'message': f'Registro del cliente {self.nombrersocial} creado con éxito'}
         except Exception as e:
             print(f'Error al ejecutar la consulta SQL: {e}')
@@ -74,6 +85,28 @@ class Cliente:
         finally:
             cur.close()
 
+    def upload_to_s3(self, file_path, s3_path): 
+        try:
+            AWS_ACCESS_KEY_ID = current_app.config['AWS_ACCESS_KEY_ID']
+            AWS_SECRET_ACCESS_KEY = current_app.config['AWS_SECRET_ACCESS_KEY']
+            AWS_BUCKET_NAME = current_app.config['AWS_BUCKET_NAME']
+            # Configuración de las credenciales de AWS
+            s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+            
+            # Subir el archivo al bucket de S3
+            s3.upload_file(file_path, AWS_BUCKET_NAME, s3_path)
+            
+            #print(f"Archivo {file_path} subido exitosamente a {AWS_BUCKET_NAME}/{s3_path}")
+            return True
+        except FileNotFoundError:
+            print(f"El archivo {file_path} no fue encontrado")
+            return False
+        except NoCredentialsError:
+            print("Credenciales de AWS no disponibles")
+            return False
+        except Exception as e:
+            print(f"Error al subir el archivo a S3: {e}")
+            return False
 
 
  ############################# RUTAS ##########################################          
@@ -94,16 +127,44 @@ def signup():
 # Función para crear un nuevo registro y agregarlo a la lista
 @acceso_bp.route('/altacliente', methods=['POST'])
 def altacliente():
-    data = request.get_json()
-    nombrersocial = data.get('nombrersocial')
-    representante = data.get('representante')
-    recurso = data.get('recurso')
+    try:
+        data = request.form.to_dict()
+        nombrersocial = data.get('nombrersocial')
+        nfrontend = data.get('nfrontend')
+        representante = data.get('representante')
+        recurso = data.get('recurso')
+        nit = data.get('nit')
+        telefono = data.get('telefono')
+        direccion = data.get('direccion')
 
-    nuevo_registro = Cliente(nombrersocial, representante, recurso)
-    resultado = nuevo_registro.guardar_en_db_cliente()
+        # Puedes acceder al archivo del logo directamente desde request.files
+        logo_file = request.files['logo']
+        
+        # Asegurar que el nombre de archivo sea seguro
+        secure_logo_filename = secure_filename(logo_file.filename)
+        #print(secure_logo_filename)
+        logo_path = f"S3/APPACTAS/LOGOSEMPRESA/{secure_logo_filename}"
+        
+        # Guardar temporalmente el archivo en el servidor
+        temp_file_path = os.path.join(tempfile.gettempdir(), secure_logo_filename)
+        logo_file.save(temp_file_path)
+        # Crear una instancia de Cliente
+        nuevo_registro = Cliente(nombrersocial, nfrontend, representante, recurso, nit, telefono, direccion, logo_path)
 
-    return jsonify(resultado)
+        # Subir el archivo al bucket de S3
+        if nuevo_registro.upload_to_s3(temp_file_path, logo_path):
+            # Eliminar el archivo temporal después de subirlo a S3
+            os.remove(temp_file_path)
+            # Si la carga en S3 es exitosa, procede a almacenar en la base de datos
+            resultado = nuevo_registro.guardar_en_db_cliente()
 
+            return jsonify(resultado)
+        else:
+            return jsonify({'success': False, 'message': 'Error al cargar el logo en S3'})
+    except Exception as e:
+        print(f"Error en altacliente: {e}")
+        return jsonify({'success': False, 'message': 'Error en altacliente'})
+    
 # Función para autenticar un usuario
 @acceso_bp.route('/login', methods=['POST'])
 def login():
