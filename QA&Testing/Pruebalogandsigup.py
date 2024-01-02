@@ -2,13 +2,15 @@
 from selenium import webdriver
 # Importa la clase `Keys` del módulo `selenium.webdriver.common.keys`, que proporciona acceso a las teclas del teclado.
 from selenium.webdriver.common.keys import Keys
-# Importa la clase `WebDriverWait` del módulo `selenium.webdriver.support.ui`, que permite esperar dinámicamente hasta que se cumpla una condición antes de continuar con el script.
+# Importa la clase `WebDriverWait` del módesperaeclo `selenium.webdriver.support.ui`, que permite esperar dinámicamente hasta que se cumpla una condición antes de continuar con el script.
 from selenium.webdriver.support.ui import WebDriverWait
-# Importa la clase `expected_conditions` del módulo `selenium.webdriver.support`, que proporciona condiciones esperadas (utilizadas con WebDriverWait).
+# Importesperaec la clase `expected_conditions` del módulo `selenium.webdriver.support`, que proporciona condiciones esperadas (utilizadas con WebDriverWait).
 from selenium.webdriver.support import expected_conditions as EC
 # Importa la clase `Faker` del módulo `faker`, que se utiliza para generar datos ficticios como nombres, direcciones, direcciones de correo electrónico, etc.
 from faker import Faker
 
+#Variable que permite esperar los eventos en pantalla
+esperaec=5;
 
 def print_green(text):
     print("\033[92m{}\033[0m".format(text))  # Código ANSI para texto verde
@@ -30,7 +32,7 @@ def prueba_login_exitoso(driver):
     password_field.send_keys(Keys.RETURN)
 
     try:
-        WebDriverWait(driver, 3).until(EC.url_contains("http://localhost:3000/home"))
+        WebDriverWait(driver, esperaec).until(EC.url_contains("http://localhost:3000/home"))
         print_green("Prueba Login OK")
     except:
         print_red("Fallo en la prueba Login")
@@ -48,9 +50,9 @@ def prueba_usuario_errado(driver):
     # Enviar el formulario
     password_field.send_keys(Keys.RETURN)
     
-    # Utilizar WebDriverWait para esperar hasta que aparezca el mensaje de error
+    # Utilizar WebDriverWait para espesperaecrar hasta que aparezca el mensaje de error
     try:
-        error_message = WebDriverWait(driver, 10).until(
+        error_message = WebDriverWait(driver, esperaec).until(
             EC.visibility_of_element_located(("xpath", "//p[@style='color: red;']"))
         )
         
@@ -82,17 +84,16 @@ def prueba_nuevo_usuario(driver):
     password_field.send_keys("Prueba321")
     # Enviar el formulario
     password_field.send_keys(Keys.RETURN)
-    
-    # Utilizar WebDriverWait para esperar hasta que aparezca el mensaje de error
+    # Utilizar WebDriverWait para espesperaecrar hasta que aparezca el mensaje de error
     try:
-        error_message = WebDriverWait(driver, 3).until(
+        error_message = WebDriverWait(driver, esperaec).until(
             EC.visibility_of_element_located(("xpath", "//p[@style='color: green;']"))
         )
         
         # Extraer el contenido del elemento
         error_message_text = error_message.text
         
-        if "Usuario registrado con exito" in error_message_text:
+        if "creado con éxito" in error_message_text:
             print_green("Prueba de Registro NUEVO OK")
         else:
             print_red("Fallo en la Prueba de Registro NUEVO")
@@ -117,16 +118,16 @@ def prueba_usuario_yaexiste (driver):
     # Enviar el formulario
     password_field.send_keys(Keys.RETURN)
     
-    # Utilizar WebDriverWait para esperar hasta que aparezca el mensaje de error
+    # Utilizar WebDriverWait para espesperaecrar hasta que aparezca el mensaje de error
     try:
-        error_message = WebDriverWait(driver, 3).until(
+        error_message = WebDriverWait(driver, esperaec).until(
             EC.visibility_of_element_located(("xpath", "//p[@style='color: red;']"))
         )
         
         # Extraer el contenido del elemento
         error_message_text = error_message.text
         
-        if "Ya existe un usuario con ese correo electronico" in error_message_text:
+        if "Ya existe un usuario con ese correo electrónico" in error_message_text:
             print_green("Prueba de Registro Repetido OK")
         else:
             print_red("Fallo en la Prueba Prueba de Registro Repetido")
@@ -147,7 +148,7 @@ def prueba_login_owner(driver):
     password_field.send_keys(Keys.RETURN)
 
     try:
-        WebDriverWait(driver, 3).until(EC.url_contains("http://localhost:3000/altacliente"))
+        WebDriverWait(driver, esperaec).until(EC.url_contains("http://localhost:3000/altacliente"))
         print_green("Prueba Login OWNER OK")
     except Exception as e:
         print_red(f"Fallo en la prueba Login OWNER (excepcion): {e}")
@@ -166,7 +167,7 @@ def prueba_nuevo_cliente(driver):
     password_field.send_keys(Keys.RETURN)
     
     # Esperar a que la página de altacliente se cargue
-    WebDriverWait(driver, 3).until(EC.presence_of_element_located(("xpath", "//h2[text()='Registrar Nuevo Cliente']")))
+    WebDriverWait(driver, esperaec).until(EC.presence_of_element_located(("xpath", "//h2[text()='Registrar Nuevo Cliente']")))
 
     # Encontrar los campos de nuevo cliente e ingresar información
     nrazonsocial_field = driver.find_element("xpath", "//label[text()='Nombre Razon Social:']/input")
@@ -203,9 +204,9 @@ def prueba_nuevo_cliente(driver):
     # Hacer clic en el botón
     button.click()
     '''
-    # Utilizar WebDriverWait para esperar hasta que aparezca el mensaje de error
+    # Utilizar WebDriverWait para espesperaecrar hasta que aparezca el mensaje de error
     try:
-        error_message = WebDriverWait(driver, 3).until(
+        error_message = WebDriverWait(driver, esperaec).until(
             EC.visibility_of_element_located(("xpath", "//p[@style='color: green;']"))
         )
         
@@ -234,7 +235,7 @@ def prueba_cliente_yaexiste(driver):
     password_field.send_keys(Keys.RETURN)
 
     # Esperar a que la página de altacliente se cargue
-    WebDriverWait(driver, 3).until(EC.presence_of_element_located(("xpath", "//h2[text()='Registrar Nuevo Cliente']")))
+    WebDriverWait(driver, esperaec).until(EC.presence_of_element_located(("xpath", "//h2[text()='Registrar Nuevo Cliente']")))
 
     # Encontrar los campos de nuevo cliente e ingresar información
     nrazonsocial_field = driver.find_element("xpath", "//label[text()='Nombre Razon Social:']/input")
@@ -250,9 +251,9 @@ def prueba_cliente_yaexiste(driver):
     # Enviar el formulario
     recurso_field.send_keys(Keys.RETURN)
     
-    # Utilizar WebDriverWait para esperar hasta que aparezca el mensaje de error
+    # Utilizar WebDriverWait para espesperaecrar hasta que aparezca el mensaje de error
     try:
-        error_message = WebDriverWait(driver, 3).until(
+        error_message = WebDriverWait(driver, esperaec).until(
             EC.visibility_of_element_located(("xpath", "//p[@style='color: red;']"))
         )
         
@@ -282,7 +283,7 @@ if __name__ == '__main__':
     brave_options = webdriver.ChromeOptions()
     brave_options.binary_location = 'C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe'  # Ajusta la ruta según tu instalación
     # Configuración específica para Brave en modo headless
-    #brave_options.add_argument('--headless')  # Habilita el modo headless
+    brave_options.add_argument('--headless')  # Habilita el modo headless
     # Inicializa el controlador de Chrome con las opciones de Brave
     driver = webdriver.Chrome(options=brave_options)
 

@@ -6,7 +6,7 @@ import './botones.css'; // Importa tu archivo SaaS
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errorCredenciales, setErrorCredenciales] = useState('');
+  const [errorLogin, setErrorLogin] = useState('');
   // Usa 'useNavigate' para obtener el objeto 'history'
   const navigate = useNavigate();
 
@@ -35,7 +35,7 @@ const Login = () => {
               navigate('/home', { state: { userData: data.data } });
           }
         } else {
-          setErrorCredenciales('Credenciales incorrectas');
+          setErrorLogin(data.message);
         }
     } catch (error) {
         console.error('Error al realizar la solicitud:', error);
@@ -75,7 +75,7 @@ const Login = () => {
         <button type="submit" className="login-button">
           Iniciar Sesión
         </button>
-        {errorCredenciales && <p style={{ color: 'red' }}>{errorCredenciales}</p>}
+        {errorLogin && <p style={{ color: 'red' }}>{errorLogin}</p>}
       </form>
       <p>
         ¿No tienes una cuenta? <Link to="/signup">Registrarse</Link>
