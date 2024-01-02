@@ -18,30 +18,38 @@ mysql = MySQL()
 
 # Definición de la clase Registro
 class Registro:
-    def __init__(self, email, nombre, apellido, password):
+    def __init__(self, email, nombre, apellido, password, recurso):
         #self.numero = numero
         self.email = email
         self.nombre = nombre
         self.apellido = apellido
         #almacenamos la pass con hash
         self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        # Extraemos el recurso o nombre de empresa del email
-        self.recurso = self.email.split('@')[1].split('.')[0]
+        self.recurso = recurso
     #definicion para uso de base de datos
     def guardar_en_db(self):        
         cur = mysql.connection.cursor()
         try:
+            # Verifica si ya existe un cliente con el mismo recurso
+            cur.execute("SELECT * FROM CLIENTES WHERE recurso = %s", (self.recurso,))
+            existing_client = cur.fetchone()
+
+            if not existing_client:
+                return {'success': False, 'message': 'No existe un Cliente con el recurso asociado al operador'}
+
             # Verifica si ya existe un registro con el mismo correo electrónico
             cur.execute("SELECT * FROM OPERADORES WHERE email = %s", (self.email,))
             existing_record = cur.fetchone()
 
             if existing_record:
-                return {'success': False, 'message': 'Ya existe un usuario con ese correo electronico'}
-            # Si no existe, procede a crear un nuevo registro
+                return {'success': False, 'message': 'Ya existe un usuario con ese correo electrónico'}
+
+            # Si no existe, procede a crear un nuevo registro de operador
             cur.execute(
                 "INSERT INTO OPERADORES (email, nombre, apellido, password, recurso) VALUES (%s, %s, %s, %s, %s)",
                 (self.email, self.nombre, self.apellido, self.password.decode('utf-8'), self.recurso)
             )
+
             mysql.connection.commit()
             return {'success': True, 'message': f'Registro con email {self.email} creado con éxito'}
         except Exception as e:
@@ -118,8 +126,10 @@ def signup():
     nombre = data.get('nombre')
     apellido = data.get('apellido')
     password = data.get('password')
+     # Extraemos el recurso o nombre de empresa del email
+    recurso = email.split('@')[1].split('.')[0]
 
-    nuevo_registro = Registro(email, nombre, apellido, password)
+    nuevo_registro = Registro(email, nombre, apellido, password,recurso)
     resultado = nuevo_registro.guardar_en_db()
 
     return jsonify(resultado)

@@ -9,8 +9,8 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [errorEmail, setErrorEmail] = useState('');
   const [errorPassword, setErrorPassword] = useState('');
-  const [errorYaexiste, setErrorYaExiste] = useState('');
-  const [exitoRegistro, setExitoRegistro] = useState('');
+  const [color, setColor] = useState('');
+  const [mensajeRegistro, setMensajeRegistro] = useState('');
 
   // Ejemplo en tu componente de Signup.js
     const handleSignup = async () => {
@@ -47,12 +47,12 @@ const Signup = () => {
           //console.log(data); //  Aqui con este console se imprime la respuest jsonfy de backend
           //Puedes manejar la respuesta del backend aquí
           if (data.success) {
-            setErrorYaExiste(''); // Limpiar mensaje de error ya que fue exitoso
-            setExitoRegistro('Usuario registrado con exito');
+            setMensajeRegistro(data.message)
+            setColor('g')
             
           } else {
-            setExitoRegistro(''); // Limpiar mensaje de éxito ya que hubo un error
-            setErrorYaExiste('Ya existe un usuario con ese correo electronico');
+            setMensajeRegistro(data.message)
+            setColor('r')
           }
       } catch (error) {
           console.error('Error al realizar la solicitud:', error);
@@ -94,8 +94,7 @@ const Signup = () => {
         <button type="submit"  className='login-button'>
           Registrarse
         </button>
-        {errorYaexiste && <p style={{ color: 'red' }}>{errorYaexiste}</p>}
-        {exitoRegistro && <p style={{ color: 'green' }}>{exitoRegistro}</p>}
+        {mensajeRegistro && <p style={{ color: color === 'g' ? 'green' : 'red' }}>{mensajeRegistro}</p>}
       </form>
       <p>
         ¿Ya tienes una cuenta? <Link to="/">Iniciar Sesión</Link>
