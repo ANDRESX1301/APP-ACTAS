@@ -175,17 +175,25 @@ def login():
     try:
         cur = mysql.connection.cursor()
         # Consultar la base de datos para obtener el registro del usuario
-        cur.execute("SELECT * FROM OPERADORES WHERE email=%s", (email,))
+        cur.execute("SELECT * FROM OPERADORES WHERE email=%s AND habilitado='s'", (email,))
         registro = cur.fetchone()
+        # Validar que el usuario existe y la contraseña coincide
         #se accede a registro que es la respuesta de SQL mediante la poscicion [] vectorial
         #y se usa encode en ambos ya que al provenir de cadenas varchar se deben autenticar en bytes
         if registro and bcrypt.checkpw(password.encode('utf-8'), registro[4].encode('utf-8')):
             # Redirigir al usuario a la página deseada después del inicio de sesión exitoso
-            return jsonify({
-                'success': True,
-                'message': 'Inicio de sesión exitoso',
-                'data': {'email': registro[1], 'nombre': registro[2], 'apellido': registro[3]}
-            })
+            cur.execute("SELECT * FROM CLIENTES WHERE recurso=%s AND habilitado='s'", (registro[5],))
+            cliente = cur.fetchone()
+
+            if cliente:
+                # Redirigir al usuario a la página deseada después del inicio de sesión exitoso
+                return jsonify({
+                    'success': True,
+                    'message': 'Inicio de sesión exitoso',
+                    'data': {'email': registro[1], 'nombre': registro[2], 'apellido': registro[3]}
+                })
+            else:
+                return jsonify({'success': False, 'message': 'La empresa no ha sido dada de ALTA'})
         else:
             return jsonify({'success': False, 'message': 'Credenciales incorrectas'})
     except Exception as e:
